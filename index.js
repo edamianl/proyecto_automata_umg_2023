@@ -22,7 +22,13 @@ function testString() {
       return;
     }
 
-    currentState = table.rows[getStateRowIndex(currentState)].cells[colIndex].querySelector('input').value;
+    let rowIndex = getStateRowIndex(currentState);
+    if(rowIndex < 0) {
+      alert("Cadena inválida: Transición no definida.");
+    } else {
+      currentState = table.rows[rowIndex].cells[colIndex].querySelector('input').value;
+    }
+
 
     if (currentState === "") {
       alert("Cadena inválida: Transición no definida.");
