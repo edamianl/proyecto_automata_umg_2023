@@ -1,10 +1,24 @@
+let statePath = [];
+
+function addStateToPath(state0) {
+  statePath.push(state0);
+}
+
 function testString() {
+
+  statePath = [];
+
   let inputString = document.getElementById('testInput').value;
   let currentState = 'q0';
   let table = document.getElementById('transitionTable');
   let acceptanceStates = [];
   let charGroup = document.getElementById('charGroup').value;
 
+  if(!table.rows[0].cells[5].innerTex) {
+    alert('Debes seleccionar un grupo de caracteres');
+    return;
+  }
+  
   // Leer estados de aceptación de la columna FDC
   for (let i = 1; i < table.rows.length; i++) {
     let row = table.rows[i];
@@ -13,25 +27,28 @@ function testString() {
     }
   }
 
+  addStateToPath(currentState);
+
   for (let char of inputString) {
     let colIndex = getColumnIndex(char, charGroup);
 
     if (colIndex === -1) {
-      alert("Cadena inválida: Carácter no reconocido.");
+      alert(`Cadena inválida: Carácter no reconocido. Camino: ${statePath.join(' -> ')}`);
       document.getElementById('testInput').value = "";
       return;
     }
 
     let rowIndex = getStateRowIndex(currentState);
     if(rowIndex < 0) {
-      alert("Cadena inválida: Transición no definida.");
+      alert(`Cadena inválida: Transición no definida. Camino: ${statePath.join(' -> ')}`);
     } else {
       currentState = table.rows[rowIndex].cells[colIndex].querySelector('input').value;
+      addStateToPath(currentState);
     }
 
 
     if (currentState === "") {
-      alert("Cadena inválida: Transición no definida.");
+      alert(`Cadena inválida: Transición no definida. Camino: ${statePath.join(' -> ')}`);
       document.getElementById('testInput').value = "";
       return;
     }
@@ -44,10 +61,12 @@ function testString() {
   }
 
   if (acceptanceStates.includes(currentState)) {
-    alert("Cadena válida.");
+    alert("Cadena válida. Camino: " + statePath.join(' -> '));
   } else {
-    alert("Cadena inválida.");
+    alert("Cadena inválida. Camino: " + statePath.join(' -> '));
   }
+
+  drawAutomata();
 
   document.getElementById('testInput').value = "";
 }
@@ -105,3 +124,35 @@ document.getElementById('charGroup').addEventListener('change', function() {
       break;
   }
 });
+
+function drawAutomata() {
+  const nodes = [];
+  const edges = [];
+
+  const table = document.getElementById('transitionTable');
+  
+  for (let i = 1; i < table.rows.length; i++) {
+    const state = table.rows[i].cells[0].innerText;
+    nodes.push({id: state, label: state});
+  }
+
+  for (let i = 1; i < table.rows.length; i++) {
+    const row = table.rows[i];
+    const fromState = row.cells[0].innerText;
+    for (let j = 1; j < row.cells.length - 1; j++) {  // -1 para evitar la columna FDC
+      const toState = row.cells[j].querySelector('input').value;
+      const char = table.rows[0].cells[j].innerText;
+      if (toState) {
+        edges.push({from: fromState, to: toState, label: char});
+      }
+    }
+  }
+
+  const container = document.getElementById('mynetwork');
+  const data = {
+    nodes: new vis.DataSet(nodes),
+    edges: new vis.DataSet(edges)
+  };
+  const options = {};
+  new vis.Network(container, data, options);
+}
