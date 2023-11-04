@@ -55,14 +55,11 @@ function testString() {
       return;
     }
 
-    /*
     if (currentState === "q6") {
       alert("Cadena inválida.");
       document.getElementById('testInput').value = "";
       return;
-    }
-    */
-    
+    }    
   }
 
   if (acceptanceStates.includes(currentState)) {
