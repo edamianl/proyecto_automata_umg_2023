@@ -14,7 +14,9 @@ function testString() {
   let acceptanceStates = [];
   let charGroup = document.getElementById('charGroup').value;
 
-  if(!table.rows[0].cells[5].innerTex) {
+  console.log(table.rows[0].cells[5].innerText);
+
+  if(!table.rows[0].cells[5].innerText) {
     alert('Debes seleccionar un grupo de caracteres');
     return;
   }
@@ -53,11 +55,14 @@ function testString() {
       return;
     }
 
+    /*
     if (currentState === "q6") {
       alert("Cadena inválida.");
       document.getElementById('testInput').value = "";
       return;
     }
+    */
+    
   }
 
   if (acceptanceStates.includes(currentState)) {
@@ -148,7 +153,7 @@ function drawAutomata() {
     }
   }
 
-  const container = document.getElementById('mynetwork');
+  const container = document.getElementById('diagram');
   const data = {
     nodes: new vis.DataSet(nodes),
     edges: new vis.DataSet(edges)
